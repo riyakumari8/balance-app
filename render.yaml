@@ -1,0 +1,41 @@
+# render.yaml
+# Blueprint to deploy the Balance Spring Boot Backend + PostgreSQL Database
+services:
+  # The PostgreSQL Database
+  - type: pgo
+    name: balance-db
+    databaseName: balance
+    user: postgres
+    plan: free # Note: free tier databases are deleted after 90 days. For production, consider upgrading or using Supabase.
+
+  # The Spring Boot Backend
+  - type: web
+    name: balance-backend
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free # Free web services spin down after 15 minutes of inactivity.
+    envVars:
+      # Database connection from the rendered Postgres instance above
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: balance-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        value: postgres
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: balance-db
+          property: password
+          
+      # Allowed frontend origin (Update this after you get your Vercel URL!)
+      - key: CORS_ALLOWED_ORIGINS
+        value: http://localhost:5173,http://localhost
+          
+      # Generate a secure JWT Secret
+      - key: JWT_SECRET
+        generateValue: true
+
+      # Tesseract Path for the Alpine Docker Container
+      - key: TESSERACT_DATAPATH
+        value: /usr/share/tessdata/

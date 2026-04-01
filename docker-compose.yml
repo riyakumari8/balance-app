@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: balance-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Riy@kum@ri08
+      POSTGRES_DB: balance
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: balance-backend
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/balance
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=Riy@kum@ri08
+      - CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost
+      - JWT_SECRET=94a08da1bf9c3a3c20078b5cecc2113ae87bb4a8d43add22d64f0ea6b54131df
+    ports:
+      - "8080:8080"
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: balance-frontend
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    restart: always
+
+volumes:
+  postgres_data:
