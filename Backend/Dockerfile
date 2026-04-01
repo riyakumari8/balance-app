@@ -10,8 +10,7 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Install Tesseract OCR internally in the container
-RUN apk add --no-cache tesseract-ocr tesseract-ocr-eng
-
+RUN apk add --no-cache tesseract-ocr tesseract-ocr-data-eng
 # Copy built JAR
 COPY --from=build /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
 
