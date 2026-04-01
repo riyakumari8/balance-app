@@ -1,11 +1,7 @@
 # render.yaml
 # Blueprint to deploy the Balance Spring Boot Backend + PostgreSQL Database
 services:
-  - type: postgres
-    name: balance-db
-    databaseName: balance
-    user: postgres
-    plan: free
+  
 
   - type: web
     name: balance-backend
